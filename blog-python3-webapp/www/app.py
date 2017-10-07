@@ -100,6 +100,7 @@ async def response_factory(app, handler):
         return resp
     return response
 
+# jinja2的filter（过滤器）初始化
 def datetime_filter(t):
     delta = int(time.time() - t)
     if delta < 60:
@@ -113,8 +114,9 @@ def datetime_filter(t):
     dt = datetime.fromtimestamp(t)
     return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
 
+# mysql grant
 async def init(loop):
-    await orm.create_pool(loop=loop, host='127.0.0.1', port=3306, user='www', password='www', db='awesome')
+    await orm.create_pool(loop=loop, host='127.0.0.1', port=3306, user='thinkpad', password='thinkpad', db='pythonblog')
     app = web.Application(loop=loop, middlewares=[
         logger_factory, response_factory
     ])

@@ -17,3 +17,7 @@ blog-python3-webapp/  <-- 根目录
 +- android/                  <-- 存放Android App工程
 |
 +- LICENSE               <-- 代码LICENSE
+
+
+在线图片网站
+https://en.gravatar.com/
