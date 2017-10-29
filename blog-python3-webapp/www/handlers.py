@@ -7,7 +7,7 @@ __author__ = 'libingbin2015@aliyun.com'
 
 import re, time, json, logging, hashlib, base64, asyncio
 import markdown2
-from apis import APIValueError, APIResourceNotFoundError, APIError, APIPermissionError
+from apis import Page, APIValueError, APIResourceNotFoundError, APIError, APIPermissionError
 from aiohttp import web
 from coroweb import get, post
 from models import User, Comment, Blog, next_id
@@ -196,6 +196,12 @@ def manage_create_blog():
         'action': '/api/blogs'
     }
 
+@get('/manage/blogs')
+def manage_blogs(*, page='1'):
+    return {
+        '__template__': 'manage_blogs.html',
+        'page_index': get_page_index(page)
+    }
 
 _RE_EMAIL = re.compile(r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
 _RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
@@ -245,3 +251,14 @@ def api_create_blog(request, *, name, summary, content):
                 name=name.strip(), summary=summary.strip(), content=content.strip())
     yield from blog.save()
     return blog
+
+
+@get('/api/blogs')
+def api_blogs(*, page='1'):
+    page_index = get_page_index(page)
+    num = yield from Blog.findNumber('count(id)')
+    p = Page(num, page_index)
+    if num == 0:
+        return dict(page=p, blogs=())
+    blogs = yield from Blog.findAll(orderBy='created_at desc', limit=(p.offset, p.limit))
+    return dict(page=p, blogs=blogs)
